@@ -62,7 +62,7 @@
     },
 
 
-/*
+    /*
          _             _     _
      ___| |_ __ _ _ __| |_  | |__   ___ _ __ ___ _
     / __| __/ _` | '__| __| | '_ \ / _ \ '__/ _ (_)
@@ -106,34 +106,16 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      /*
-      const boardAttr = this.attributes;
-      console.log(boardAttr);
-      let foundInCol = _.reduce(boardAttr, function(acc, current) {
-        if (Array.isArray(current)) {
-          acc.push(current[colIndex]);
-        }
-        //console.log(acc);
-        return acc;
-        // if (Array.isArray(current)) {
-        //   acc.concat(current[colIndex]);
-        // }
-      }, []);
-      console.log(foundInCol);
-      //console.log(foundInCol);
-      // let found = foundInCol.reduce(function(acc, current) {
-      //   acc += current;
-      // }, 0);
+      
+      const boardMatrix = this.rows();
+      
       let found = 0;
-      for (let i = 0; i < foundInCol.length; i++) {
-        if (foundInCol[i] === 1) {
+      for (let i = 0; i < boardMatrix.length; i++) {
+        if (boardMatrix[i][colIndex] === 1) {
           found++;
         }
       }
-      console.log(found);
-      
       return found > 1; // fixme
-      */
     },
 
     // test if any columns on this board contain conflicts
@@ -153,11 +135,39 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
+      
+      const majorDM = this.rows();
+      const startPointsMD = {};
+     
+      for (let r = 0; r < majorDM.length; r++) {
+        for (let c = 0; c < majorDM[r].length; c++) {
+          if (majorDM[r][c] === 1){
+            let currentMDStart = this._getFirstRowColumnIndexForMajorDiagonalOn(r, c);
+            if (!startPointsMD.hasOwnProperty(currentMDStart)) {
+              startPointsMD[currentMDStart] = 1;
+            } else {
+              startPointsMD[currentMDStart]++;
+            }
+          }
+        }
+      }
+              
+      for (const key in startPointsMD) {
+        if (startPointsMD[key] > 1) {
+          return true;
+        }
+      }
+      
       return false; // fixme
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
+      for (let i = 0; i < this.get('n'); i++) {
+        if (this.hasMajorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
       return false; // fixme
     },
 
@@ -168,11 +178,40 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+            
+      const minorDM = this.rows();
+      const startPointsMD = {};
+     
+      for (let r = 0; r < minorDM.length; r++) {
+        for (let c = 0; c < minorDM[r].length; c++) {
+          if (minorDM[r][c] === 1){
+            let currentMDStart = this._getFirstRowColumnIndexForMinorDiagonalOn(r, c);
+            if (!startPointsMD.hasOwnProperty(currentMDStart)) {
+              startPointsMD[currentMDStart] = 1;
+            } else {
+              startPointsMD[currentMDStart]++;
+            }
+          }
+        }
+      }
+              
+      for (const key in startPointsMD) {
+        if (startPointsMD[key] > 1) {
+          return true;
+        }
+      }
+      
       return false; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      for (let i = 0; i < this.get('n'); i++) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      
       return false; // fixme
     }
 
